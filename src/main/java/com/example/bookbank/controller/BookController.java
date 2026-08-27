@@ -2,6 +2,7 @@ package com.example.bookbank.controller;
 
 import com.example.bookbank.entity.Book;
 import com.example.bookbank.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,19 +26,20 @@ public class BookController {
 
     // GET book by ID
     @GetMapping("/{id}")
-    public Optional<Book> getBookById(@PathVariable Long id) {
+    public Book getBookById(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 
     // POST - Create a new book
     @PostMapping
-    public Book createBook(@RequestBody Book book) {
+    public Book createBook(@Valid @RequestBody Book book) {
         return bookService.createBook(book);
     }
 
     // PUT - Update a book
     @PutMapping("/{id}")
     public Book updateBook(
+            @Valid
             @PathVariable Long id,
             @RequestBody Book bookDetails) {
 

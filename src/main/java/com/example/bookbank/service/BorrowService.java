@@ -4,12 +4,17 @@ import com.example.bookbank.entity.Book;
 import com.example.bookbank.entity.Borrow;
 import com.example.bookbank.entity.User;
 import com.example.bookbank.enums.BorrowStatus;
+import com.example.bookbank.exception.BookNotFoundException;
+import com.example.bookbank.exception.BookUnavailableException;
+import com.example.bookbank.exception.BorrowNotFoundException;
+import com.example.bookbank.exception.UserNotFoundException;
 import com.example.bookbank.repository.BookRepository;
 import com.example.bookbank.repository.BorrowRepository;
 import com.example.bookbank.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class BorrowService {
@@ -28,6 +33,11 @@ public class BorrowService {
         this.bookRepository = bookRepository;
     }
 
+    public List<Borrow> getBorrowDetails(){
+
+        return borrowRepository.findAll();
+
+    }
     public Borrow borrowBook(
             Long userId,
             Long bookId,
@@ -36,16 +46,16 @@ public class BorrowService {
         // 1. Find the user
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new UserNotFoundException("User not found"));
 
         // 2. Find the book
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() ->
-                        new RuntimeException("Book not found"));
+                        new BookNotFoundException("Book not found"));
 
         // 3. Check availability
         if (book.getAvailableQuantity() <= 0) {
-            throw new RuntimeException("Book is not available and RESERVATION option is yet to be released");
+            throw new BookUnavailableException("Book is not available and RESERVATION option is yet to be released");
         }
 
         // 4. Create borrowing record
@@ -74,7 +84,7 @@ public class BorrowService {
         // 1. Find the borrow record
         Borrow borrow = borrowRepository.findById(borrowId)
                 .orElseThrow(() ->
-                        new RuntimeException("Borrow record not found"));
+                        new BorrowNotFoundException("Borrow record not found"));
 
         // 2. Check if the book is already returned
         if (!borrow.getUserId().equals(userId)) {
