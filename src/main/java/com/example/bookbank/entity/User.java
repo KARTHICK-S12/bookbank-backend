@@ -1,11 +1,11 @@
 package com.example.bookbank.entity;
 
 import com.example.bookbank.enums.UserRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name="users")
@@ -22,7 +22,7 @@ public class User {
     @Column(unique=true , nullable=false)
     private String email;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank
     private String password;
 

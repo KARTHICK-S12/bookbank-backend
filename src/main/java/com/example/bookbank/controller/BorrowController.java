@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/borrows")
@@ -17,6 +18,12 @@ public class BorrowController {
 
     public BorrowController(BorrowService borrowService) {
         this.borrowService = borrowService;
+    }
+
+    @GetMapping
+    public List<Borrow> borrowDetails(){
+
+        return borrowService.getBorrowDetails();
     }
 
     @PostMapping

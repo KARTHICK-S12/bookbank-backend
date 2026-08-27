@@ -1,6 +1,10 @@
 package com.example.bookbank.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "books")
@@ -10,10 +14,14 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title cannot be blank")
     private String title;
 
+    @NotBlank(message = "Author cannot be blank")
     private String author;
 
+    @Column(unique = true)
+    @Size(min = 10, max = 20, message = "ISBN must be between 10 and 20 characters")
     private String isbn;
 
     public Long getId() {
@@ -90,12 +98,17 @@ public class Book {
 
     private String category;
 
+    @NotBlank(message = "Publisher cannot be blank")
     private String publisher;
 
+    @NotNull(message = "Publication year is required")
     private Integer publicationYear;
 
+    @NotNull(message = "Total quantity is required")
+    @Min(0)
     private Integer totalQuantity;
 
+    @NotNull(message = "Available quantity is required")
     private Integer availableQuantity;
 
     // Getters and Setters

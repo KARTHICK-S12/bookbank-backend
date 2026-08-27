@@ -1,6 +1,8 @@
 package com.example.bookbank.service;
 
 import com.example.bookbank.entity.Book;
+import com.example.bookbank.exception.BookNotFoundException;
+import com.example.bookbank.exception.BookValidationException;
 import com.example.bookbank.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +24,25 @@ public class BookService {
     }
 
     // Get book by ID
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    public Book getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+        return book;
     }
 
     // Add a new book
     public Book createBook(Book book) {
+
+        if (bookRepository.existsByIsbn(book.getIsbn())) {
+            throw new BookValidationException("ISBN already exists");
+        }
+
+        if (book.getAvailableQuantity() > book.getTotalQuantity()) {
+            throw new BookValidationException(
+                    "Available quantity cannot be greater than total quantity"
+            );
+        }
+
         return bookRepository.save(book);
     }
 
@@ -35,7 +50,7 @@ public class BookService {
     public Book updateBook(Long id, Book bookDetails) {
 
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
 
         existingBook.setTitle(bookDetails.getTitle());
         existingBook.setAuthor(bookDetails.getAuthor());
