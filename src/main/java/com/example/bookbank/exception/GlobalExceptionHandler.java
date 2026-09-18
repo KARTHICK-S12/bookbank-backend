@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.time.LocalDateTime;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
@@ -15,14 +14,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(
-            {
-                    BookNotFoundException.class,
-                    UserNotFoundException.class,
-                    BorrowNotFoundException.class
-            }
-    )
-    public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException e){
+    @ExceptionHandler(NotFoundException.class)
+
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e){
 
         return buildErrorResponse(
                 HttpStatus.NOT_FOUND,
@@ -30,24 +24,25 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(BookUnavailableException.class)
-    public ResponseEntity<ErrorResponse> handleBookUnavailable(
-            BookUnavailableException e) {
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(
+            ConflictException e) {
 
         return buildErrorResponse(
                 HttpStatus.CONFLICT,
                 e.getMessage()
         );
     }
-    @ExceptionHandler(BookValidationException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidBookQuantity(
-            BookValidationException e) {
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(
+            ForbiddenException e) {
 
         return buildErrorResponse(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.FORBIDDEN,
                 e.getMessage()
         );
     }
+
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

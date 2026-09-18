@@ -1,5 +1,6 @@
 package com.example.bookbank.service;
 
+import com.example.bookbank.exception.NotFoundException;
 import com.example.bookbank.repository.UserRepository;
 import com.example.bookbank.entity.User;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class UserService {
 
     public User updateUser(Long id, User userDetails){
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new NotFoundException("User Not Found"));
 
         existingUser.setName(userDetails.getName());
         existingUser.setEmail(userDetails.getEmail());
