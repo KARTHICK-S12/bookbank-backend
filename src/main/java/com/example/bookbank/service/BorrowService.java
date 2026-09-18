@@ -4,10 +4,9 @@ import com.example.bookbank.entity.Book;
 import com.example.bookbank.entity.Borrow;
 import com.example.bookbank.entity.User;
 import com.example.bookbank.enums.BorrowStatus;
-import com.example.bookbank.exception.BookNotFoundException;
-import com.example.bookbank.exception.BookUnavailableException;
-import com.example.bookbank.exception.BorrowNotFoundException;
-import com.example.bookbank.exception.UserNotFoundException;
+import com.example.bookbank.exception.ForbiddenException;
+import com.example.bookbank.exception.NotFoundException;
+import com.example.bookbank.exception.ConflictException;
 import com.example.bookbank.repository.BookRepository;
 import com.example.bookbank.repository.BorrowRepository;
 import com.example.bookbank.repository.UserRepository;
@@ -46,16 +45,16 @@ public class BorrowService {
         // 1. Find the user
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new UserNotFoundException("User not found"));
+                        new NotFoundException("User not found"));
 
         // 2. Find the book
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() ->
-                        new BookNotFoundException("Book not found"));
+                        new NotFoundException("Book not found"));
 
         // 3. Check availability
         if (book.getAvailableQuantity() <= 0) {
-            throw new BookUnavailableException("Book is not available and RESERVATION option is yet to be released");
+            throw new ConflictException("Book is not available and RESERVATION option is yet to be released");
         }
 
         // 4. Create borrowing record
@@ -84,16 +83,16 @@ public class BorrowService {
         // 1. Find the borrow record
         Borrow borrow = borrowRepository.findById(borrowId)
                 .orElseThrow(() ->
-                        new BorrowNotFoundException("Borrow record not found"));
+                        new NotFoundException("Borrow record not found"));
 
         // 2. Check if the book is already returned
         if (!borrow.getUserId().equals(userId)) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "You are not allowed to return this borrow"
             );
         }
         if (borrow.getStatus() == BorrowStatus.RETURNED) {
-            throw new RuntimeException("Book is already returned");
+            throw new ConflictException("Book is already returned");
         }
 
         // 3. Get the book
